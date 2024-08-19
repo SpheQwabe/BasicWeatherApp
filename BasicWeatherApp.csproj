@@ -58,6 +58,9 @@
     <Compile Include="Models\CurrentUnits.cs" />
     <Compile Include="Models\CurrentValues.cs" />
     <Compile Include="Models\CurrentWeatherData.cs" />
+    <Compile Include="Models\Daily.cs" />
+    <Compile Include="Models\DailyUnits.cs" />
+    <Compile Include="Models\DailyWeatherData.cs" />
     <Compile Include="Models\DayNight.cs" />
     <Compile Include="Models\Hourly.cs" />
     <Compile Include="Models\HourlyUnits.cs" />

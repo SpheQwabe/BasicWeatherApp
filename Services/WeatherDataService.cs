@@ -22,6 +22,11 @@ namespace BasicWeatherApp.Services
             return JsonConvert.DeserializeObject<HourlyWeatherData>(json);
         }
 
+        public DailyWeatherData DeserializeDailyWeatherData(string json)
+        {
+            return JsonConvert.DeserializeObject<DailyWeatherData>(json);
+        }
+
         public async Task<string> GetJsonString(string siteUrl, string endPoint)
         {
             using (HttpClient client = new HttpClient())

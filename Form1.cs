@@ -196,8 +196,93 @@ namespace BasicWeatherApp
             string dailyEndpoint = "?latitude=" + latitude + "&longitude=" + longitude + "&daily=" + dailyData;
 
             string jsonString = await _weatherDataService.GetJsonString(siteUrl, dailyEndpoint);
-           
 
+            DailyWeatherData dailyWeatherData = _weatherDataService.DeserializeDailyWeatherData(jsonString);
+
+            List<string> time = dailyWeatherData.daily.time;
+            List<double> preProbability = dailyWeatherData.daily.precipitation_probability_max;
+            List<int> weatherCode = dailyWeatherData.daily.weather_code;
+            List<double> maxTemp = dailyWeatherData.daily.temperature_2m_max;
+            List<double> minTemp = dailyWeatherData.daily.temperature_2m_min;
+
+            int _yPos = 7;
+
+            for(int j = 0; j < 7; j++)
+            {
+                TableLayoutPanel dailyTableLayoutPanel = new TableLayoutPanel();
+
+                dailyTableLayoutPanel.RowCount = 1;
+                dailyTableLayoutPanel.ColumnCount = 5;
+                dailyTableLayoutPanel.Size = new Size(550, 100);
+                dailyTableLayoutPanel.Location = new Point(0, _yPos);
+
+                for(int i = 0; i < dailyTableLayoutPanel.ColumnCount; i++)
+                {
+                    dailyTableLayoutPanel.ColumnStyles.Add(new ColumnStyle());
+                }
+
+                for(int i = 0; i < dailyTableLayoutPanel.ColumnCount; i++)
+                {
+                    dailyTableLayoutPanel.ColumnStyles[i].SizeType = SizeType.Percent;
+                    dailyTableLayoutPanel.ColumnStyles[i].Width = 20;
+                }
+
+                Label dayLabel = new Label();
+                string dayOfTheWeek = GetDayOfWeekFromDateString(time.ElementAt(j));
+                dayLabel.Text = dayOfTheWeek;
+                dayLabel.Font = new Font("Arial", 12, FontStyle.Bold);
+                dayLabel.Margin = new Padding(3, 0, 3, 0);
+                dayLabel.ForeColor = Color.White;
+                dayLabel.Dock = DockStyle.Fill;
+                dayLabel.TextAlign = ContentAlignment.MiddleCenter;
+
+                Label rainLabel = new Label();
+                rainLabel.Text = "Rain - " + Math.Round(preProbability.ElementAt(j)) + " " + dailyWeatherData.daily_units.precipitation_probability_max;
+                rainLabel.Font = new Font("Arial", 10);
+                rainLabel.Margin = new Padding(3, 0, 3, 0);
+                rainLabel.ForeColor = Color.White;
+                rainLabel.Dock = DockStyle.Fill;
+                rainLabel.TextAlign = ContentAlignment.MiddleCenter;
+
+                /*Load the image*/
+                Dictionary<string, string> weatherInfo = _weatherDataService.GetWeatherDescriptions(weatherCode.ElementAt(j), 1);
+                PictureBox imageBox = new PictureBox();
+                imageBox.Margin = new Padding(0, 20, 0, 0);
+                imageBox.SizeMode = PictureBoxSizeMode.CenterImage;
+                imageBox.Load(weatherInfo["image"]);
+
+                Label maxTempLabel = new Label();
+                maxTempLabel.Text = Math.Round(maxTemp.ElementAt(j)) + " " + dailyWeatherData.daily_units.temperature_2m_max;
+                maxTempLabel.Font = new Font("Arial", 14, FontStyle.Bold);
+                maxTempLabel.Margin = new Padding(3, 0, 3, 0);
+                maxTempLabel.ForeColor = Color.White;
+                maxTempLabel.Dock = DockStyle.Fill;
+                maxTempLabel.TextAlign = ContentAlignment.MiddleCenter;
+
+                Label minTempLabel = new Label();
+                minTempLabel.Text = Math.Round(minTemp.ElementAt(j)) + " " + dailyWeatherData.daily_units.temperature_2m_min;
+                minTempLabel.Font = new Font("Arial", 14, FontStyle.Bold);
+                minTempLabel.Margin = new Padding(3, 0, 3, 0);
+                minTempLabel.ForeColor = Color.White;
+                minTempLabel.Dock = DockStyle.Fill;
+                minTempLabel.TextAlign = ContentAlignment.MiddleCenter;
+
+                dailyTableLayoutPanel.Controls.Add(dayLabel, 0, 0);
+                dailyTableLayoutPanel.Controls.Add(rainLabel, 1, 0);
+                dailyTableLayoutPanel.Controls.Add(imageBox, 2, 0);
+                dailyTableLayoutPanel.Controls.Add(maxTempLabel, 3, 0);
+                dailyTableLayoutPanel.Controls.Add(minTempLabel, 4, 0);
+
+                daily_panel.Controls.Add(dailyTableLayoutPanel);
+
+                _yPos += 100;
+            }
+        }
+
+        public string GetDayOfWeekFromDateString(string dateString)
+        {
+            DateTime date = DateTime.Parse(dateString);
+            return date.DayOfWeek.ToString();
         }
     }
 }
